@@ -4,12 +4,19 @@
     // File Layout
     "rootDir": "./src",
     "outDir": "./dist",
+    "baseUrl": "./",
+
+    "paths": {
+      "@prisma/client": ["generated/prisma/index.d.ts"]
+    },
 
     // Environment Settings
     // See also https://aka.ms/tsconfig/module
-    "module": "nodenext",
+    "module": "commonjs",
     "target": "esnext",
     "types": [],
+    "moduleResolution": "node",
+    "esModuleInterop": true,
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],

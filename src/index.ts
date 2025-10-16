@@ -1,13 +1,10 @@
 import express from "express";
 import type { Express, Request, Response } from "express";
-import authRoutes from "./routes/auth.routes.js";
-// import { message } from "./routes/auth.js";
+import authRoutes from "./routes/auth.routes";
 
 const app: Express = express();
 app.use(express.json()); //Middleware to parse json bodies
 const port: number = 3000;
-
-// console.log("IMPORTED MESSAGE:", message);
 
 //base url
 app.use("/api/auth", authRoutes);
