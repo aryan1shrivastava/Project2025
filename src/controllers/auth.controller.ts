@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import { PrismaClient } from "@prisma/client";
+import jwt from "jsonwebtoken";
 
 const prisma = new PrismaClient();
 
@@ -51,7 +52,49 @@ export const registerUser = async (req: Request, res: Response) => {
 };
 
 export const loginUser = async (req: Request, res: Response) => {
-  res.json({
-    status: "login page",
-  });
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        error: "email and password required",
+      });
+    }
+
+    const loginUser = await prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+
+    if (!loginUser) {
+      return res.status(401).json({
+        error: "Unauthorized",
+      });
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, loginUser.password);
+
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        error: "Invalid credentials",
+      });
+    }
+
+    const token = jwt.sign(
+      { userId: loginUser.id }, //payload
+      process.env.JWT_SECRET!,
+      { expiresIn: "3h" } //expiration time
+    );
+
+    return res.status(200).json({
+      status: "Logged In Successfully!",
+      token: token,
+    });
+  } catch (error) {
+    console.log("Login error: ", error);
+    return res.status(500).json({
+      error: "Internal server error",
+    });
+  }
 };
